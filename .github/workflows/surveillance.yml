@@ -37,7 +37,7 @@ jobs:
         env:
           RUN_ONCE: "1"                            # un seul cycle puis exit
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}    # topic dans les secrets du repo
-          SEARCH_ID: "47"                          # phase 2026-2027 (voir /api/fr/tools)
+          SEARCH_ID: "42"                          # TEST TEMPORAIRE — remettre "47" après
         run: python crous_watch.py
 
       - name: Sauvegarder l'état (logements vus)
