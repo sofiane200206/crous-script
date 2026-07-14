@@ -1,0 +1,54 @@
+name: Surveillance CROUS
+
+on:
+  schedule:
+    # Toutes les 5 minutes (minimum autorisé par GitHub ; en pratique GitHub
+    # ajoute souvent quelques minutes de délai, compter ~5 à 15 min réels).
+    - cron: "*/5 * * * *"
+  # Permet aussi de lancer un cycle à la main depuis l'onglet Actions.
+  workflow_dispatch:
+
+# Nécessaire pour committer le fichier d'état (logements_vus.json).
+permissions:
+  contents: write
+
+# Jamais deux cycles en même temps (évite les conflits sur le fichier d'état).
+concurrency:
+  group: surveillance-crous
+  cancel-in-progress: false
+
+jobs:
+  surveiller:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer requests
+        run: pip install requests
+
+      - name: Un cycle de surveillance
+        env:
+          RUN_ONCE: "1"                            # un seul cycle puis exit
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}    # topic dans les secrets du repo
+          SEARCH_ID: "47"                          # phase 2026-2027 (voir /api/fr/tools)
+        run: python crous_watch.py
+
+      - name: Sauvegarder l'état (logements vus)
+        run: |
+          if [ -n "$(git status --porcelain logements_vus.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add logements_vus.json
+            git commit -m "Mise à jour de l'état des logements vus"
+            git pull --rebase origin main
+            git push
+          else
+            echo "Pas de changement d'état, rien à committer."
+          fi

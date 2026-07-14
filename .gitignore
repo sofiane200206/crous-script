@@ -1,0 +1,12 @@
+# Le .env contient le topic ntfy (qui fait office de mot de passe) :
+# il ne doit JAMAIS etre pousse sur GitHub. Sur Actions, le topic est
+# fourni via les secrets du repo (NTFY_TOPIC).
+.env
+
+# Logs et fichiers temporaires locaux
+crous_watch.log
+__pycache__/
+*.tmp
+
+# NOTE : logements_vus.json n'est PAS ignore : c'est le workflow GitHub
+# Actions qui le committe pour persister l'etat entre deux cycles.
