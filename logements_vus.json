@@ -1,10 +1,7 @@
 {
-  "search_id": 42,
+  "search_id": 47,
   "initialise": true,
-  "ids": [
-    2009,
-    2064
-  ],
+  "ids": [],
   "erreurs_4xx": 0,
   "alerte_4xx_envoyee": false
 }
